@@ -5,6 +5,21 @@
 #include <format>
 #include <string_view>
 
+//******************************************************************************
+// Decimal to Scientific Notation Calculator
+//
+// Step 1: Check if number is negative
+// Step 2: Determine index of decimal point
+// Step 3: Determine index of first significant figure
+// Step 4: Perform left or right shifting of decimal point
+// Step 5: Update exponent with number of shifts
+// Step 6: Format the scientific number
+// Step 7: Print the result
+
+//  Steve Stevington
+//  Apr 2025
+//******************************************************************************
+
 // Forward declarations
 std::string to_scientific(const std::string& input);
 bool isInputNegative(std::string_view in);
