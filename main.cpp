@@ -4,7 +4,10 @@
 #include <cctype>
 #include <format>
 
+// Forward declarations
 std::string to_scientific(const std::string& input);
+bool isInputNegative(std::string in);
+
 
 int main() {
 
@@ -26,14 +29,7 @@ std::string to_scientific(const std::string& input) {
 
     // Step 1: Detect if input is negative
     bool negative = false;
-    for (std::size_t i = 0; i < input.size(); ++i) {
-        char c = input[i];
-
-        if (i == 0 && (c == '-')) { // Detected a negative number
-            negative = true;
-            continue;
-        } 
-    }
+    negative = isInputNegative(input);
 
     // Step 2: Initialize variables
     int exponent {};
@@ -131,4 +127,17 @@ std::string to_scientific(const std::string& input) {
     result += std::to_string(exponent);
 
     return result;
+}
+
+bool isInputNegative(std::string in) {
+    bool negative = false;
+    for (std::size_t i = 0; i < in.size(); ++i) {
+    char c = in[i];
+
+    if (i == 0 && (c == '-')) { // Detected a negative number
+        negative = true;
+        continue;
+        } 
+    }
+    return negative;
 }
