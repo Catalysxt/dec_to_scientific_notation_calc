@@ -23,7 +23,7 @@
 // Forward declarations
 std::string to_scientific(const std::string& input);
 bool isInputNegative(std::string_view in);
-std::string formatResult(std::string mantissa, bool negative, int exp);
+std::string formatResult(bool negative, int exp, std::string_view input);
 
 int main() {
 
@@ -51,9 +51,7 @@ std::string to_scientific(const std::string& input) {
     int first_sig_fig {};
     int decimal_pt {};
 
-    // Step 2: Determine initial position. I.e. populate variables
-
-    // 2.1 Locate decimal point
+    // Step 2: Locate decimal point
     bool found_decimal = false;
     
     for(std::size_t i = 0; i < input.size(); ++i) {
@@ -69,7 +67,7 @@ std::string to_scientific(const std::string& input) {
         decimal_pt = static_cast<int>(input.size()); 
     }
 
-    // 2.2 Locate first sig fig
+    // Step 3: Locate first sig fig
     bool found_sig_fig = false;
     for (std::size_t i = 0; i < input.size(); ++i) {
         if (input[i] != '.' && input[i] != '0' && std::isdigit(static_cast<unsigned char>(input[i]))) {
@@ -83,7 +81,8 @@ std::string to_scientific(const std::string& input) {
         return std::string(negative ? "-" : "") + "0e0";
     }
 
-    // Step 3: Calculate left/right shift and exponent
+    // Step 4: Calculate left/right shift
+    // Step 5: Update exponent
     // At the end we want first_sig_index == decimal_index = 1
 
     // left shift, increment exponent
@@ -100,8 +99,25 @@ std::string to_scientific(const std::string& input) {
         exponent = 0;
     }
 
-    // Step 4: Construction
-    
+    // Step 6 and 7: Format and print the result
+    return formatResult(negative, exponent, input);
+}
+
+bool isInputNegative(std::string_view in) {
+    bool negative = false;
+    for (std::size_t i = 0; i < in.size(); ++i) {
+    char c = in[i];
+
+    if (i == 0 && (c == '-')) { // Detected a negative number
+        negative = true;
+        continue;
+        } 
+    }
+    return negative;
+}
+
+std::string formatResult(bool negative, int exponent, std::string_view input) {
+        
     std::vector<char> digits;
     for (char c : input) {
         if (std::isdigit(static_cast<unsigned char>(c))) {
@@ -126,24 +142,6 @@ std::string to_scientific(const std::string& input) {
         }
     }
 
-    // Step 5: Final Formatting
-    return formatResult(mantissa, negative, exponent);
-}
-
-bool isInputNegative(std::string_view in) {
-    bool negative = false;
-    for (std::size_t i = 0; i < in.size(); ++i) {
-    char c = in[i];
-
-    if (i == 0 && (c == '-')) { // Detected a negative number
-        negative = true;
-        continue;
-        } 
-    }
-    return negative;
-}
-
-std::string formatResult(std::string mantissa, bool negative, int exponent) {
     std::string result;
     if(negative) {
         result.push_back('-');
