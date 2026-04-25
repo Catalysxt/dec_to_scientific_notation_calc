@@ -3,10 +3,11 @@
 #include <vector>
 #include <cctype>
 #include <format>
+#include <string_view>
 
 // Forward declarations
 std::string to_scientific(const std::string& input);
-bool isInputNegative(std::string in);
+bool isInputNegative(std::string_view in);
 std::string formatResult(std::string mantissa, bool negative, int exp);
 
 int main() {
@@ -31,14 +32,13 @@ std::string to_scientific(const std::string& input) {
     bool negative = false;
     negative = isInputNegative(input);
 
-    // Step 2: Initialize variables
     int exponent {};
     int first_sig_fig {};
     int decimal_pt {};
 
-    // Step 3: Determine initial position. I.e. populate variables
+    // Step 2: Determine initial position. I.e. populate variables
 
-    // 3.1 Locate decimal point
+    // 2.1 Locate decimal point
     bool found_decimal = false;
     
     for(std::size_t i = 0; i < input.size(); ++i) {
@@ -54,7 +54,7 @@ std::string to_scientific(const std::string& input) {
         decimal_pt = static_cast<int>(input.size()); 
     }
 
-    // 3.2 Locate first sig fig
+    // 2.2 Locate first sig fig
     bool found_sig_fig = false;
     for (std::size_t i = 0; i < input.size(); ++i) {
         if (input[i] != '.' && input[i] != '0' && std::isdigit(static_cast<unsigned char>(input[i]))) {
@@ -68,7 +68,7 @@ std::string to_scientific(const std::string& input) {
         return std::string(negative ? "-" : "") + "0e0";
     }
 
-    // Step 4: Calculate left/right shift and exponent
+    // Step 3: Calculate left/right shift and exponent
     // At the end we want first_sig_index == decimal_index = 1
 
     // left shift, increment exponent
@@ -85,7 +85,7 @@ std::string to_scientific(const std::string& input) {
         exponent = 0;
     }
 
-    // Step 5: Construction
+    // Step 4: Construction
     
     std::vector<char> digits;
     for (char c : input) {
@@ -111,11 +111,11 @@ std::string to_scientific(const std::string& input) {
         }
     }
 
-    // Step 6: Final Formatting
+    // Step 5: Final Formatting
     return formatResult(mantissa, negative, exponent);
 }
 
-bool isInputNegative(std::string in) {
+bool isInputNegative(std::string_view in) {
     bool negative = false;
     for (std::size_t i = 0; i < in.size(); ++i) {
     char c = in[i];
