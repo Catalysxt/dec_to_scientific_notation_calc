@@ -7,7 +7,7 @@
 // Forward declarations
 std::string to_scientific(const std::string& input);
 bool isInputNegative(std::string in);
-
+std::string formatResult(std::string mantissa, bool negative, int exp);
 
 int main() {
 
@@ -112,21 +112,7 @@ std::string to_scientific(const std::string& input) {
     }
 
     // Step 6: Final Formatting
-
-    // Add negative number if applicable
-    std::string result;
-    if(negative) {
-        result.push_back('-');
-    }
-    result += mantissa;
-
-    // Add the 'e'
-    result.push_back('e');
-
-    // Add the value of the exponent
-    result += std::to_string(exponent);
-
-    return result;
+    return formatResult(mantissa, negative, exponent);
 }
 
 bool isInputNegative(std::string in) {
@@ -140,4 +126,20 @@ bool isInputNegative(std::string in) {
         } 
     }
     return negative;
+}
+
+std::string formatResult(std::string mantissa, bool negative, int exponent) {
+    std::string result;
+    if(negative) {
+        result.push_back('-');
+    }
+    result += mantissa;
+
+    // Add the 'e'
+    result.push_back('e');
+
+    // Add the value of the exponent
+    result += std::to_string(exponent);
+
+    return result;
 }
