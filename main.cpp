@@ -99,3 +99,10 @@ std::string format_result(bool negative, int exponent, std::string_view input) {
     }
     return std::format("{}e{}", mantissa, exponent);
 }
+
+// Output
+// 12.000       -> 1.2000e1
+// 43212        -> 4.3212e4
+// 0.000643     -> 6.43e-4
+// 1042.4402    -> 1.0424402e3
+// -0.00000099  -> -9.9e-7
