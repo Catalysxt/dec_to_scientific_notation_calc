@@ -17,13 +17,13 @@
 // Step 7: Print the result
 
 //  Steve Stevington
-//  Apr 2025
+//  Apr 2026
 //******************************************************************************
 
 // Forward declarations
-std::string to_scientific(const std::string& input);
-bool isInputNegative(std::string_view in);
-std::string formatResult(bool negative, int exp, std::string_view input);
+std::string to_scientific(std::string_view input);
+bool is_input_negative(std::string_view in);
+std::string format_result(bool negative, int exp, std::string_view input);
 
 int main() {
 
@@ -41,29 +41,19 @@ int main() {
     };
 }
 
-std::string to_scientific(const std::string& input) {
+std::string to_scientific(std::string_view input) {
 
     // Step 1: Detect if input is negative
-    bool negative = false;
-    negative = isInputNegative(input);
+    bool negative = is_input_negative(input);
 
     int exponent {};
     int first_sig_fig {};
     int decimal_pt {};
 
-    // Step 2: Locate decimal point
-    bool found_decimal = false;
-    
-    for(std::size_t i = 0; i < input.size(); ++i) {
-        if (input[i] == '.') {
-            decimal_pt = static_cast<int>(i);
-            found_decimal = true;
-            break;
-        }
-    }
+    decimal_pt = input.find(".");
 
     // If no decimal pt detected, assign it the length of the number
-    if(!found_decimal) {
+    if(decimal_pt == std::string_view::npos) {
         decimal_pt = static_cast<int>(input.size()); 
     }
 
@@ -92,7 +82,7 @@ std::string to_scientific(const std::string& input) {
 
     // right shift, decrement exponent
     else if (first_sig_fig > decimal_pt) {
-        exponent = -(first_sig_fig - decimal_pt);
+        exponent = decimal_pt - first_sig_fig;
     }
 
     else {
@@ -100,10 +90,10 @@ std::string to_scientific(const std::string& input) {
     }
 
     // Step 6 and 7: Format and print the result
-    return formatResult(negative, exponent, input);
+    return format_result(negative, exponent, input);
 }
 
-bool isInputNegative(std::string_view in) {
+bool is_input_negative(std::string_view in) {
     bool negative = false;
     for (std::size_t i = 0; i < in.size(); ++i) {
     char c = in[i];
@@ -116,7 +106,7 @@ bool isInputNegative(std::string_view in) {
     return negative;
 }
 
-std::string formatResult(bool negative, int exponent, std::string_view input) {
+std::string format_result(bool negative, int exponent, std::string_view input) {
         
     std::vector<char> digits;
     for (char c : input) {
@@ -132,8 +122,13 @@ std::string formatResult(bool negative, int exponent, std::string_view input) {
         ++lead;
     }
 
-    // Insert decimal after the sig fig
     std::string mantissa;
+    // Add leading negative sign if required
+    if (negative) {
+        mantissa.push_back('-');
+    }
+    
+    // Insert decimal after the sig fig
     mantissa.push_back(digits[lead]);
     if (lead + 1 < digits.size()) {
         mantissa.push_back('.');
@@ -142,17 +137,6 @@ std::string formatResult(bool negative, int exponent, std::string_view input) {
         }
     }
 
-    std::string result;
-    if(negative) {
-        result.push_back('-');
-    }
-    result += mantissa;
-
-    // Add the 'e'
-    result.push_back('e');
-
-    // Add the value of the exponent
-    result += std::to_string(exponent);
-
+    std::string result(mantissa + 'e' + std::to_string(exponent));
     return result;
 }
