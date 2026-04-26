@@ -73,7 +73,7 @@ std::string to_scientific(std::string_view input) {
 
     // Step 4: Calculate left/right shift
     // Step 5: Update exponent
-    // At the end we want first_sig_index == decimal_index = 1
+    // At the end we want first_sig_index == decimal_index + 1
 
     // left shift, increment exponent
     if (decimal_pt > first_sig_fig) {
