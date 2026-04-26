@@ -17,7 +17,7 @@
 // Step 6: Format the scientific number
 // Step 7: Print the result
 
-//  Steve Stevington
+//  Ahmad Sarraj
 //  Apr 2026
 //******************************************************************************
 
