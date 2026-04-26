@@ -76,38 +76,20 @@ std::string to_scientific(std::string_view input) {
         ? (decimal_pt - first_sig_fig - 1)
         : (decimal_pt - first_sig_fig);
 
-
-    // if (decimal_pt > first_sig_fig) {
-    //     exponent = decimal_pt - first_sig_fig - 1;
-    // }
-
-    // // right shift, decrement exponent
-    // else if (first_sig_fig > decimal_pt) {
-    //     exponent = decimal_pt - first_sig_fig;
-    // }
-
-    // else {
-    //     exponent = 0;
-    // }
-
-    // Step 6 and 7: Format and print the result
     return format_result(negative, exponent, input);
 }
 
 std::string format_result(bool negative, int exponent, std::string_view input) {
         
     auto it = std::ranges::find_if(input, [](unsigned char i) { return std::isdigit(i) && i != '0'; });
-    int first_non_zero_dig = std::ranges::distance(input.begin(), it);
 
     std::string mantissa;
     // Add leading negative sign if required
     if (negative) {
         mantissa.push_back('-');
     }
-    
     // Insert decimal after the sig fig
-    mantissa.push_back(input.at(first_non_zero_dig));
-    mantissa.push_back('.');
+    mantissa += { *it, '.' };
 
     // Push back after first non zero digit
     for (auto i = std::next(it); i != input.end(); ++i) {
@@ -115,8 +97,5 @@ std::string format_result(bool negative, int exponent, std::string_view input) {
             if (std::isdigit(*it)) mantissa.push_back(*i);
         }
     }
-    
-    //return std::format("{}'e'{}", mantissa, exponent);
-    std::string result(mantissa + 'e' + std::to_string(exponent));
-    return result;
+    return std::format("{}e{}", mantissa, exponent);
 }
