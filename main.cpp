@@ -23,7 +23,6 @@
 
 // Forward declarations
 std::string to_scientific(std::string_view input);
-bool is_input_negative(std::string_view in);
 std::string format_result(bool negative, int exp, std::string_view input);
 
 int main() {
@@ -45,10 +44,9 @@ int main() {
 std::string to_scientific(std::string_view input) {
 
     // Step 1: Detect if input is negative
-    bool negative = is_input_negative(input);
+    bool negative = input.starts_with('-');
 
     int decimal_pt {};
-    
     decimal_pt = input.find(".");
     
     // If no decimal pt detected, assign it the length of the number
@@ -57,7 +55,7 @@ std::string to_scientific(std::string_view input) {
     }
     
     // Step 3: Locate first sig fig
-    auto it = std::ranges::find_if(input, [](unsigned char c) { return std::isdigit(c) && c != '0' && c != '.'; } );
+    auto it = std::ranges::find_if(input, [](unsigned char c) { return std::isdigit(c) && c != '0'; } );
     
     int first_sig_fig {};
     first_sig_fig = std::ranges::distance(input.begin(), it);
@@ -89,34 +87,23 @@ std::string to_scientific(std::string_view input) {
     return format_result(negative, exponent, input);
 }
 
-bool is_input_negative(std::string_view in) {
-    bool negative = false;
-    for (std::size_t i = 0; i < in.size(); ++i) {
-    char c = in[i];
-
-    if (i == 0 && (c == '-')) { // Detected a negative number
-        negative = true;
-        continue;
-        } 
-    }
-    return negative;
-}
-
 std::string format_result(bool negative, int exponent, std::string_view input) {
         
-    std::vector<char> digits;
-    for (char c : input) {
-        if (std::isdigit(static_cast<unsigned char>(c))) {
-            digits.push_back(c);
-        }
-    }
+    // std::vector<char> digits;
+    // for (char c : input) {
+    //     if (std::isdigit(static_cast<unsigned char>(c))) {
+    //         digits.push_back(c);
+    //     }
+    // }
 
     // Ensure first digit is nonzero by trimming leading zeros
-    std::size_t lead {0};
+    // std::size_t lead {0};
 
-    while (lead < digits.size() - 1 && digits[lead] == '0') {
-        ++lead;
-    }
+    // while (lead < digits.size() - 1 && digits[lead] == '0') {
+    //     ++lead;
+    // }
+    auto it = std::ranges::find_if(input, [](unsigned char i) { return i != '0'; });
+    int first_non_zero_dig = std::ranges::distance(input.begin(), it);
 
     std::string mantissa;
     // Add leading negative sign if required
@@ -125,14 +112,17 @@ std::string format_result(bool negative, int exponent, std::string_view input) {
     }
     
     // Insert decimal after the sig fig
-    mantissa.push_back(digits[lead]);
-    if (lead + 1 < digits.size()) {
-        mantissa.push_back('.');
-        for (std::size_t i = lead + 1; i < digits.size(); ++i) {
-            mantissa.push_back(digits[i]);
+    mantissa.push_back(input.at(first_non_zero_dig));
+    mantissa.push_back('.');
+
+    // Push back after first non zero digit
+    for (auto i = std::next(it); i != input.end(); ++i) {
+        if (std::isdigit(static_cast<unsigned char>(*i))) {
+            mantissa.push_back(*i);
         }
     }
-
+    
+    //return std::format("{}'e'{}", mantissa, exponent);
     std::string result(mantissa + 'e' + std::to_string(exponent));
     return result;
 }
